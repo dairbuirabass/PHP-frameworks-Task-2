@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+  </head>
+  <body>
+    <h1>Enter the place name and you will get longitude and latitude</h1>
+      <h6>Place name:<h6><br>
+      <input id="address" type="text" name="address" placeholder="Enter the address...">
+      <br><br>
+      <button onclick="getLongLat()">Go</button>
+  </body>
+  <script type="text/javascript">
+
+    function getLongLat() {
+      var inputAddress = document.getElementById("address").value;
+      inputAddress = inputAddress.split(" ").join("+");
+      var requestUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=" + inputAddress + "&key=AIzaSyBt3uKBhBC3dEBbvgOGkXcKzB8fQilcJDA" ;
+      httpGetAsync(requestUrl, printLongLat);
+    }
+
+    function httpGetAsync(url, callback) {
+      var xmlHttp = new XMLHttpRequest();
+      // var params = JSON.stringify({address: inputAddress})
+      xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+          // console.log(xmlHttp.responseText.data.results[0]);
+          var response = JSON.parse(xmlHttp.responseText);
+          callback(response);
+        }
+      }
+      xmlHttp.open("GET", url, true); // true for asynchronous
+      xmlHttp.send(null);
+    }
+
+    function printLongLat(response) {
+      console.log(response.results[0].geometry.location.lat);
+      console.log(response.results[0].geometry.location.lng);
+    }
+
+
+    // https://stackoverflow.com/questions/247483/http-get-request-in-javascript
+
+  </script>
+</html>
