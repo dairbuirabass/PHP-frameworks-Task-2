@@ -2,10 +2,36 @@
 <html>
   <head>
     <title>Page Title</title>
+    <style>
+      #map {
+        width: 100%;
+        height: 400px;
+      }
+    </style>
+    <script>
+      function initMap() {
+        var longField = Number(document.getElementById('longField').textContent);
+        var latField  = Number(document.getElementById('latField').textContent);
+        var coords = { lat: latField, lng: longField };
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: coords
+        });
+        var marker = new google.maps.Marker({
+          position: coords,
+          map: map
+        });
+      }
+    </script>
   </head>
   <body>
     <h1>{{formatted_address}}</h1>
-    <h2><strong>Longitude:</strong>{{longitude}}</h2>
-    <h2><strong>Latitude:</strong>{{latitude}}</h2>
+    <h2><strong>Longitude:</strong><span id="longField">{{longitude}}</span></h2>
+    <h2><strong>Latitude:</strong><span id="latField">{{latitude}}</span></h2>
+    <br>
+    <div id="map"></div>
   </body>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0vApjUjq1RfkFxr3_p85VdGU3b6u7QM&callback=initMap">
+  </script>
 </html>
