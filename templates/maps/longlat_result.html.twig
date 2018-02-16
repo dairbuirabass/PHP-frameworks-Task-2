@@ -72,13 +72,16 @@
     </script>
   </head>
   <body>
-    <h1>{{formatted_address}}</h1>
+    <h1><strong>Formatted address: </strong>{{formatted_address}}</h1>
     <h2><strong>Longitude: </strong><span id="longField">{{longitude}}</span></h2>
     <h2><strong>Latitude: </strong><span id="latField">{{latitude}}</span></h2>
+    <label for="changeIconSelector">Select Marker</label>
     <select id="changeIconSelector" onchange="changeIcon()" name="selectIcon">
       <option selected value="1">Default Marker</option>
       <option value="2">Custom Marker</option>
     </select>
+    <br><br>
+    <label for="changeColorSelector">Select Color</label>
     <select disabled id="changeColorSelector" onchange="changeIcon()" name="selectCustomColor">
       <option selected value="Yellow">Yellow</option>
       <option value="Green">Green</option>
