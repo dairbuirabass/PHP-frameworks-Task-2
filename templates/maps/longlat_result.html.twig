@@ -18,7 +18,7 @@
           zoom: 4,
           center: coords
         });
-        showMarker();
+        showMarker(document.getElementById("changeIconSelector").value);
       }
 
       function showMarker(icon) {
@@ -26,42 +26,64 @@
           marker.setMap(null);
           marker = null;
         }
-        if (!icon) {
+
+        if (icon == 1) {
+          document.getElementById("changeColorSelector").disabled = true;
           marker = new google.maps.Marker({
             position: coords,
             map: map
           });
         }
-        else {
-          console.log("WOw");
+        else if (icon == 2) {
+          var fillColor, strokeColor;
+          document.getElementById("changeColorSelector").disabled = false;
+          if (document.getElementById("changeColorSelector").value == "Yellow") {
+            fillColor = "#FF0";
+            strokeColor = "#FFD700";
+          }
+          else if (document.getElementById("changeColorSelector").value == "Green") {
+            fillColor = "#0F0";
+            strokeColor = "#00D700";
+          }
           marker = new google.maps.Marker({
             position: coords,
             map: map,
-            icon: icon
+            icon: {
+              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+              fillColor: fillColor,
+              fillOpacity: 0.9,
+              scale:8,
+              strokeColor: strokeColor,
+              strokeWeight: 2
+            }
+            // #0F0, #00D700
           });
         }
       }
 
-      function changeIcon(value) {
-        if (value == 1) {
-          showMarker();
+      function changeIcon() {
+        if (document.getElementById("changeIconSelector").value == 1) {
+          showMarker(1);
         }
-        else if (value == 2) {
-          showMarker('https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png');
+        else if (document.getElementById("changeIconSelector").value == 2) {
+          showMarker(2);
         }
       }
     </script>
   </head>
   <body>
     <h1>{{formatted_address}}</h1>
-    <h2><strong>Longitude:</strong><span id="longField">{{longitude}}</span></h2>
-    <h2><strong>Latitude:</strong><span id="latField">{{latitude}}</span></h2>
-    <select onchange="changeIcon(this.value)" name="selectIcon">
-      <option value="1">Default Marker</option>
-      <option value="2">Beach Flag</option>
+    <h2><strong>Longitude: </strong><span id="longField">{{longitude}}</span></h2>
+    <h2><strong>Latitude: </strong><span id="latField">{{latitude}}</span></h2>
+    <select id="changeIconSelector" onchange="changeIcon()" name="selectIcon">
+      <option selected value="1">Default Marker</option>
+      <option value="2">Custom Marker</option>
     </select>
-    <br>
-    <br>
+    <select disabled id="changeColorSelector" onchange="changeIcon()" name="selectCustomColor">
+      <option selected value="Yellow">Yellow</option>
+      <option value="Green">Green</option>
+    </select>
+    <br><br>
     <div id="map"></div>
   </body>
   <script async defer
