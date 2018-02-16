@@ -9,18 +9,46 @@
       }
     </style>
     <script>
+      var map, marker, coords;
       function initMap() {
         var longField = Number(document.getElementById('longField').textContent);
         var latField  = Number(document.getElementById('latField').textContent);
-        var coords = { lat: latField, lng: longField };
-        var map = new google.maps.Map(document.getElementById('map'), {
+        coords = { lat: latField, lng: longField };
+        map = new google.maps.Map(document.getElementById('map'), {
           zoom: 4,
           center: coords
         });
-        var marker = new google.maps.Marker({
-          position: coords,
-          map: map
-        });
+        showMarker();
+      }
+
+      function showMarker(icon) {
+        if (marker) {
+          marker.setMap(null);
+          marker = null;
+        }
+        if (!icon) {
+          marker = new google.maps.Marker({
+            position: coords,
+            map: map
+          });
+        }
+        else {
+          console.log("WOw");
+          marker = new google.maps.Marker({
+            position: coords,
+            map: map,
+            icon: icon
+          });
+        }
+      }
+
+      function changeIcon(value) {
+        if (value == 1) {
+          showMarker();
+        }
+        else if (value == 2) {
+          showMarker('https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png');
+        }
       }
     </script>
   </head>
@@ -28,6 +56,11 @@
     <h1>{{formatted_address}}</h1>
     <h2><strong>Longitude:</strong><span id="longField">{{longitude}}</span></h2>
     <h2><strong>Latitude:</strong><span id="latField">{{latitude}}</span></h2>
+    <select onchange="changeIcon(this.value)" name="selectIcon">
+      <option value="1">Default Marker</option>
+      <option value="2">Beach Flag</option>
+    </select>
+    <br>
     <br>
     <div id="map"></div>
   </body>
