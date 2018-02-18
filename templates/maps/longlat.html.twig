@@ -2,14 +2,106 @@
 <html>
   <head>
     <title>Page Title</title>
+    <style>
+      #map {
+        width: 100%;
+        height: 400px;
+      }
+    </style>
+    <script>
+      var map, marker, coords;
+
+      function initMap() {
+        var longField = Number(document.getElementById('longField').textContent);
+        var latField  = Number(document.getElementById('latField').textContent);
+        coords = { lat: latField, lng: longField };
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: coords
+        });
+        showMarker(document.getElementById("changeIconSelector").value);
+      }
+
+      function showMarker(icon) {
+        if (marker) {
+          marker.setMap(null);
+          marker = null;
+        }
+
+        if (icon == 1) {
+          document.getElementById("changeColorSelector").disabled = true;
+          marker = new google.maps.Marker({
+            position: coords,
+            map: map
+          });
+        }
+        else if (icon == 2) {
+          var fillColor, strokeColor;
+          document.getElementById("changeColorSelector").disabled = false;
+          if (document.getElementById("changeColorSelector").value == "Yellow") {
+            fillColor = "#FF0";
+            strokeColor = "#FFD700";
+          }
+          else if (document.getElementById("changeColorSelector").value == "Green") {
+            fillColor = "#0F0";
+            strokeColor = "#00D700";
+          }
+          marker = new google.maps.Marker({
+            position: coords,
+            map: map,
+            icon: {
+              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+              fillColor: fillColor,
+              fillOpacity: 0.9,
+              scale:8,
+              strokeColor: strokeColor,
+              strokeWeight: 2
+            }
+            // #0F0, #00D700
+          });
+        }
+      }
+
+      function changeIcon() {
+        if (document.getElementById("changeIconSelector").value == 1) {
+          showMarker(1);
+        }
+        else if (document.getElementById("changeIconSelector").value == 2) {
+          showMarker(2);
+        }
+      }
+    </script>
   </head>
   <body>
     <h1>Enter the place name to get geocoding results</h1>
-    <form method="get" action="/maps/longlat/results">
+    <form method="get" action="/maps/longlat">
       <label>Place name:</label>
       <input id="address" type="text" name="address" placeholder="Enter the address...">
       <br><br>
-      <input type="submit" value="Submit">
+      <input type="submit" name="submitForm" value="Submit">
+
+      {% if longitude is defined and latitude is defined and formatted_address is defined %}
+        <h1><strong>Formatted address: </strong>{{formatted_address}}</h1>
+        <h2><strong>Longitude: </strong><span id="longField">{{longitude}}</span></h2>
+        <h2><strong>Latitude: </strong><span id="latField">{{latitude}}</span></h2>
+        <label for="changeIconSelector">Select Marker</label>
+        <select id="changeIconSelector" onchange="changeIcon()" name="selectIcon">
+          <option selected value="1">Default Marker</option>
+          <option value="2">Custom Marker</option>
+        </select>
+        <br><br>
+        <label for="changeColorSelector">Select Color</label>
+        <select disabled id="changeColorSelector" onchange="changeIcon()" name="selectCustomColor">
+          <option selected value="Yellow">Yellow</option>
+          <option value="Green">Green</option>
+        </select>
+        <br><br>
+        <div id="map"></div>
+        <script async defer
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0vApjUjq1RfkFxr3_p85VdGU3b6u7QM&callback=initMap">
+        </script>
+      {% endif %}
+
     </form>
   </body>
 </html>

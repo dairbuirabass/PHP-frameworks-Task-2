@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Page Title</title>
+    <style>
+      #map {
+        width: 100%;
+        height: 400px;
+      }
+    </style>
+    <script>
+
+    var rad = function(x) {
+      return x * Math.PI / 180;
+    };
+
+    var getDistance = function(p1, p2) {
+      var R = 6378137;
+      var dLat = rad(p2.lat - p1.lat);
+      var dLong = rad(p2.lng - p1.lng);
+      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(rad(p1.lat)) * Math.cos(rad(p2.lat)) *
+          Math.sin(dLong / 2) * Math.sin(dLong / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var d = R * c;
+      return d; // returns the distance in meter
+    };
+
+    function initMap() {
+      var origLongField = Number(document.getElementById('originLongField').textContent);
+      var origLatField  = Number(document.getElementById('originLatField').textContent);
+      var destLongField = Number(document.getElementById('destinationLongField').textContent);
+      var destLatField  = Number(document.getElementById('destinationLatField').textContent);
+
+      var origCoords = { lat: origLatField, lng: origLongField };
+      var destCoords = { lat: destLatField, lng: destLongField };
+
+      var calculatedDistance = Math.floor(getDistance(origCoords, destCoords));
+      calculatedDistance.toString();
+      calculatedDistance += " meters";
+
+      document.getElementById('displacementField').innerHTML = calculatedDistance;
+
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 4,
+        center: origCoords
+      });
+      var origMarker = new google.maps.Marker({
+        position: origCoords,
+        map: map
+      });
+      var destMarker = new google.maps.Marker({
+        position: destCoords,
+        map: map
+      });
+      var polylineCoords = [
+        origCoords,
+        destCoords,
+      ];
+      var flightPath = new google.maps.Polyline({
+        path: polylineCoords,
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        map: map
+      });
+    }
+    </script>
+  </head>
+  <body>
+    <h1>Enter the place name to get geocoding results</h1>
+    <form method="get" action="/maps/distance">
+      <label>Origin name:</label>
+      <input id="origin" type="text" name="origin" placeholder="Enter the origin address...">
+      <br>
+      <label>Destination name:</label>
+      <input id="destination" type="text" name="destination" placeholder="Enter the destination address...">
+      <br><br>
+      <input type="submit" name="submitForm" value="Submit">
+    </form>
+
+    {% if distance is defined and
+          originLatitude is defined and originLongitude is defined and originFromattedAddress is defined and
+          destinationLatitude is defined and destinationLongitude is defined and destinationFromattedAddress is defined %}
+      <h1><strong>Driving distance: </strong>{{distance}}</h1>
+      <h1><strong>Displacement: </strong><span id="displacementField"></span></h1>
+      <h2><strong>Origin: </strong>{{originFromattedAddress}}</h2>
+      <h2><strong>Destination: </strong>{{destinationFromattedAddress}}</h2>
+      <h4>
+        <strong>Longitude: </strong><span id="originLongField">{{originLongitude}}</span>
+        <strong>Latitude: </strong><span id="originLatField">{{originLatitude}}</span>
+      </h4>
+      <h4>
+        <strong>Longitude: </strong><span id="destinationLongField">{{destinationLongitude}}</span>
+        <strong>Latitude: </strong><span id="destinationLatField">{{destinationLatitude}}</span>
+      </h4>
+      <br><br>
+      <div id="map"></div>
+
+      <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0vApjUjq1RfkFxr3_p85VdGU3b6u7QM&callback=initMap">
+      </script>
+    {% endif %}
+
+  </body>
+</html>
