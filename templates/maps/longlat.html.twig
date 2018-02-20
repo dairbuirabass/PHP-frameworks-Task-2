@@ -79,29 +79,27 @@
       <input id="address" type="text" name="address" placeholder="Enter the address...">
       <br><br>
       <input type="submit" name="submitForm" value="Submit">
-
-      {% if longitude is defined and latitude is defined and formatted_address is defined %}
-        <h1><strong>Formatted address: </strong>{{formatted_address}}</h1>
-        <h2><strong>Longitude: </strong><span id="longField">{{longitude}}</span></h2>
-        <h2><strong>Latitude: </strong><span id="latField">{{latitude}}</span></h2>
-        <label for="changeIconSelector">Select Marker</label>
-        <select id="changeIconSelector" onchange="changeIcon()" name="selectIcon">
-          <option selected value="1">Default Marker</option>
-          <option value="2">Custom Marker</option>
-        </select>
-        <br><br>
-        <label for="changeColorSelector">Select Color</label>
-        <select disabled id="changeColorSelector" onchange="changeIcon()" name="selectCustomColor">
-          <option selected value="Yellow">Yellow</option>
-          <option value="Green">Green</option>
-        </select>
-        <br><br>
-        <div id="map"></div>
-        <script async defer
-          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0vApjUjq1RfkFxr3_p85VdGU3b6u7QM&callback=initMap">
-        </script>
-      {% endif %}
-
     </form>
+    {% if longitude is defined and latitude is defined and formatted_address is defined %}
+      <h1><strong>Formatted address: </strong>{{formatted_address}}</h1>
+      <h2><strong>Longitude: </strong><span id="longField">{{longitude}}</span></h2>
+      <h2><strong>Latitude: </strong><span id="latField">{{latitude}}</span></h2>
+      <label for="changeIconSelector">Select Marker</label>
+      <select id="changeIconSelector" onchange="changeIcon()" name="selectIcon">
+        <option selected value="1">Default Marker</option>
+        <option value="2">Custom Marker</option>
+      </select>
+      <br><br>
+      <label for="changeColorSelector">Select Color</label>
+      <select disabled id="changeColorSelector" onchange="changeIcon()" name="selectCustomColor">
+        <option selected value="Yellow">Yellow</option>
+        <option value="Green">Green</option>
+      </select>
+      <br><br>
+      <div id="map"></div>
+      <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0vApjUjq1RfkFxr3_p85VdGU3b6u7QM&callback=initMap">
+      </script>
+    {% endif %}
   </body>
 </html>

@@ -91,7 +91,7 @@ class MainController extends Controller
              return false;
            }
          }
-         $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$origin}&destinations={$destination}&key=AIzaSyBt3uKBhBC3dEBbvgOGkXcKzB8fQilcJDA";
+         $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$origin}&destinations={$destination}&key=AIzaSyDEAsSxtHwgJdj083m2dYz3t4jxXOQ2Eng";
          $resp_json = file_get_contents($url);
          $resp = json_decode($resp_json, true);
 
@@ -116,6 +116,26 @@ class MainController extends Controller
        }
        else {
          return $this->render('maps/distance.html.twig');
+       }
+     }
+     /**
+      * @Route("/maps/navigation")
+      */
+     public function navigation()
+     {
+       if (isset($_GET['submitForm'])) {
+         $origin = urlencode($_GET['origin']);
+         $destination = urlencode($_GET['destination']);
+         $mode = $_GET['mode'];
+         $url = "https://maps.googleapis.com/maps/api/directions/json?origin={$origin}&destination={$destination}&mode={$mode}&key=AIzaSyDEAsSxtHwgJdj083m2dYz3t4jxXOQ2Eng";
+         $resp_json = file_get_contents($url);
+
+
+         return $this->render('maps/navigation.html.twig', array(
+               'response' => $resp_json ));
+       }
+       else {
+         return $this->render('maps/navigation.html.twig');
        }
      }
 }
