@@ -127,12 +127,44 @@ class MainController extends Controller
          $origin = urlencode($_GET['origin']);
          $destination = urlencode($_GET['destination']);
          $mode = $_GET['mode'];
-         $url = "https://maps.googleapis.com/maps/api/directions/json?origin={$origin}&destination={$destination}&mode={$mode}&key=AIzaSyDEAsSxtHwgJdj083m2dYz3t4jxXOQ2Eng";
-         $resp_json = file_get_contents($url);
 
+         for ($x = 0; $x <= 1; $x ++) {
+           if ($x == 0) {
+             $geolocation = $origin;
+           }
+           else {
+             $geolocation = $destination;
+           }
+
+           $url = "https://maps.googleapis.com/maps/api/geocode/json?address={$geolocation}&key=AIzaSyBt3uKBhBC3dEBbvgOGkXcKzB8fQilcJDA";
+           $resp_json = file_get_contents($url);
+           $resp = json_decode($resp_json, true);
+
+           if ($resp['status']=='OK') {
+             $formatted_address = isset($resp['results'][0]['formatted_address']) ? $resp['results'][0]['formatted_address'] : "";
+
+             if ($formatted_address) {
+               if ($x == 0) {
+                 $originFormatted = $formatted_address;
+               } else {
+                 $destinationFormatted = $formatted_address;
+               }
+             } else {
+               return false;
+             }
+           }
+         }
+         $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins={$origin}&destinations={$destination}&key=AIzaSyDEAsSxtHwgJdj083m2dYz3t4jxXOQ2Eng";
+         $resp_json = file_get_contents($url);
+         $resp = json_decode($resp_json, true);
+
+         if ($resp['status']=='OK') {
+           $distance = isset($resp['rows'][0]['elements'][0]['distance']['value']) ? $resp['rows'][0]['elements'][0]['distance']['value'] : "";
+         }
 
          return $this->render('maps/navigation.html.twig', array(
-               'response' => $resp_json ));
+               'origin' => $originFormatted, 'destination' => $destinationFormatted, 'mode' => $mode, 'distance' => $distance
+         ));
        }
        else {
          return $this->render('maps/navigation.html.twig');
