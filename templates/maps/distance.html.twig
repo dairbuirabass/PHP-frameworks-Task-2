@@ -35,8 +35,9 @@
       var destCoords = { lat: destLatField, lng: destLongField };
 
       var calculatedDistance = Math.floor(getDistance(origCoords, destCoords));
+      calculatedDistance = calculatedDistance / 1000;
       calculatedDistance.toString();
-      calculatedDistance += " meters";
+      calculatedDistance += " km";
 
       document.getElementById('displacementField').innerHTML = calculatedDistance;
 
@@ -82,7 +83,7 @@
     {% if distance is defined and
           originLatitude is defined and originLongitude is defined and originFromattedAddress is defined and
           destinationLatitude is defined and destinationLongitude is defined and destinationFromattedAddress is defined %}
-      <h1><strong>Driving distance: </strong>{{distance}}</h1>
+      <h1><strong>Driving distance: </strong>{{distance}} meters</h1>
       <h1><strong>Displacement: </strong><span id="displacementField"></span></h1>
       <h2><strong>Origin: </strong>{{originFromattedAddress}}</h2>
       <h2><strong>Destination: </strong>{{destinationFromattedAddress}}</h2>
