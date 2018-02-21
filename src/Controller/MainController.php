@@ -21,30 +21,35 @@ class MainController extends Controller
      public function longlat()
      {
        if (isset($_GET['submitForm'])) {
-         $address = urlencode($_GET["address"]);
-         $url = "https://maps.googleapis.com/maps/api/geocode/json?address={$address}&key=AIzaSyBt3uKBhBC3dEBbvgOGkXcKzB8fQilcJDA";
-         $resp_json = file_get_contents($url);
-         $resp = json_decode($resp_json, true);
-
+         if (!empty($_GET["address"])) {
+           $address = urlencode($_GET["address"]);
+           $url = "https://maps.googleapis.com/maps/api/geocode/json?address={$address}&key=AIzaSyBt3uKBhBC3dEBbvgOGkXcKzB8fQilcJDA";
+           $resp_json = file_get_contents($url);
+           $resp = json_decode($resp_json, true);
+         } else {
+           $lat = urlencode($_GET["lat"]);
+           $lng = urlencode($_GET["lng"]);
+           $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$lat},{$lng}&key=AIzaSyBt3uKBhBC3dEBbvgOGkXcKzB8fQilcJDA";
+           $resp_json = file_get_contents($url);
+           $resp = json_decode($resp_json, true);
+         }
          if ($resp['status']=='OK') {
-           $lati = isset($resp['results'][0]['geometry']['location']['lat']) ? $resp['results'][0]['geometry']['location']['lat'] : "";
-           $longi = isset($resp['results'][0]['geometry']['location']['lng']) ? $resp['results'][0]['geometry']['location']['lng'] : "";
-           $formatted_address = isset($resp['results'][0]['formatted_address']) ? $resp['results'][0]['formatted_address'] : "";
-           if ($lati && $longi && $formatted_address) {
-             return $this->render('maps/longlat.html.twig', array(
-                   'longitude' => $longi, 'latitude' => $lati, 'formatted_address'=> $formatted_address
-             ));
-           } else {
+             $lati = isset($resp['results'][0]['geometry']['location']['lat']) ? $resp['results'][0]['geometry']['location']['lat'] : "";
+             $longi = isset($resp['results'][0]['geometry']['location']['lng']) ? $resp['results'][0]['geometry']['location']['lng'] : "";
+             $formatted_address = isset($resp['results'][0]['formatted_address']) ? $resp['results'][0]['formatted_address'] : "";
+             if ($lati && $longi && $formatted_address) {
+               return $this->render('maps/longlat.html.twig', array(
+                     'longitude' => $longi, 'latitude' => $lati, 'formatted_address'=> $formatted_address
+               ));
+             } else {
+               return false;
+             }
+           }
+           else {
+             echo "<strong>ERROR: {$resp['status']}</strong>";
              return false;
            }
-         }
-         else {
-           echo "<strong>ERROR: {$resp['status']}</strong>";
-           return false;
-         }
-
-       }
-       else {
+       } else {
          return $this->render('maps/longlat.html.twig');
        }
      }

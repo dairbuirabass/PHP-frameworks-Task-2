@@ -9,6 +9,39 @@
       }
     </style>
     <script>
+    window.addEventListener("load", docLoaded);
+
+      function docLoaded() {
+        var latInput = document.getElementById("lat");
+        var lngInput = document.getElementById("lng");
+        var addressInput = document.getElementById("address");
+            addressInput.oninput = function () {
+              if (this.value != "" || this.value.length > 0) {
+                latInput.disabled = true;
+                lngInput.disabled = true;
+              } else {
+                latInput.disabled = false;
+                lngInput.disabled = false;
+              }
+            }
+            latInput.oninput = function () {
+              if (this.value != "" || this.value.length > 0 ||
+                  lngInput.value != "" || lngInput.value.length) {
+                addressInput.disabled = true;
+              } else {
+                addressInput.disabled = false;
+              }
+            }
+            lngInput.oninput = function () {
+              if (this.value != "" || this.value.length > 0 ||
+                  latInput.value != "" || latInput.value.length) {
+                addressInput.disabled = true;
+              } else {
+                addressInput.disabled = false;
+              }
+            }
+      }
+
       var map, marker, coords;
 
       function initMap() {
@@ -78,12 +111,16 @@
       <label>Place name:</label>
       <input id="address" type="text" name="address" placeholder="Enter the address...">
       <br><br>
+      <label>Or enter coordinates:</label>
+      <input id="lat" type="text" name="lat" placeholder="Latitude...">
+      <input id="lng" type="text" name="lng" placeholder="Longitude...">
+      <br><br>
       <input type="submit" name="submitForm" value="Submit">
     </form>
     {% if longitude is defined and latitude is defined and formatted_address is defined %}
       <h1><strong>Formatted address: </strong>{{formatted_address}}</h1>
-      <h2><strong>Longitude: </strong><span id="longField">{{longitude}}</span></h2>
       <h2><strong>Latitude: </strong><span id="latField">{{latitude}}</span></h2>
+      <h2><strong>Longitude: </strong><span id="longField">{{longitude}}</span></h2>
       <label for="changeIconSelector">Select Marker</label>
       <select id="changeIconSelector" onchange="changeIcon()" name="selectIcon">
         <option selected value="1">Default Marker</option>
