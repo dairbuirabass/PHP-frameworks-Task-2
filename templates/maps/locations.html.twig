@@ -75,7 +75,7 @@
       function saveData() {
         var info = escape(document.getElementById('info').value);
         var latlng = marker.getPosition();
-        var url = 'http://www.students.oamk.fi/~t6bada00/Phase4/phpsqlinfo_addrow.php?info=' + info +
+        var url = 'http://www.students.oamk.fi/~t6bada00/googlesymfony/phpsqlinfo_addrow.php?info=' + info +
                   '&lat=' + latlng.lat() + '&lng=' + latlng.lng();
 
         downloadUrl(url, function(data, responseCode) {
