@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Navigation Instructions</title>
+    <style>
+      input[type=text] {
+        width: 25%;
+      }
+      #mapContainer {
+        width: 50%;
+        float: left;
+      }
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+      #right-panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+        width: 100%;
+      }
+
+      #right-panel select, #right-panel input {
+        font-size: 15px;
+      }
+
+      #right-panel select {
+        width: 100%;
+      }
+
+      #right-panel i {
+        font-size: 12px;
+      }
+      #right-panel {
+        height: 100%;
+        float: left;
+        width: 390px;
+        overflow: auto;
+      }
+    </style>
+    <script>
+      var map;
+      var infoWindow;
+      var markers = [];
+
+      function initMap() {
+        var oulu = {lat: 65.0121, lng: 25.4651};
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 13,
+            center: oulu
+        });
+
+        infoWindow = new google.maps.InfoWindow;
+
+        var url = 'https://www.students.oamk.fi/~t6bada00/googlesymfony/phpsqlinfo_get.php';
+
+        downloadUrl(url, function(data, responseCode) {
+          if (responseCode == 200) {
+            data = JSON.parse(data);
+            for (var i = 0; i < data.length; i ++)
+            {
+              var info = String(data[i].info);
+              var infowincontent = document.createElement('div');
+              var text = document.createElement('text');
+                        text.textContent = data[i].info;
+                        infowincontent.appendChild(text);
+
+                  markers.push(new google.maps.Marker({
+                      position: {lat: Number(data[i].lat), lng: Number(data[i].lng)},
+                      map: map
+                  }));
+
+                  markers[i].addListener('click', function() {
+                    infoWindow.setContent(infowincontent);
+                    infoWindow.open(map, this);
+                  });
+            }
+          } else {
+            console.log("Error");
+          }
+        });
+      }
+
+      function downloadUrl(url, callback) {
+        var request = new XMLHttpRequest();
+        request.open('GET', url, true);
+        request.onreadystatechange = function() {
+          if (request.readyState == 4) {
+            request.onreadystatechange = doNothing;
+            callback(request.responseText, request.status);
+          }
+        };
+        request.send(null);
+      }
+
+      function doNothing () {
+      }
+
+    </script>
+  </head>
+  <body>
+    <div style="display: none;">
+      <div id="form">
+        <label>Information:</label>
+        <br>
+        <input style="width:96px;" type='text' id='info'/>
+        <br><br>
+      </div>
+    </div>
+
+    <h1>The database results are marked as markers</h1>
+    <p>
+      The database used in example is located at mysli.oamk.fi
+    </p>
+
+    <div id="map"></div>
+
+  </body>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0vApjUjq1RfkFxr3_p85VdGU3b6u7QM&callback=initMap">
+  </script>
+</html>
