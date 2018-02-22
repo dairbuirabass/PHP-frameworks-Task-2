@@ -84,7 +84,6 @@
             infowindow.close();
             messagewindow.open(map, marker);
           } else {
-            console.log("DAANG")
           }
         });
       }
@@ -107,19 +106,21 @@
         request.send(null);
         }
 
-function doNothing () {
-}
+      function doNothing () {
+      }
 
     </script>
   </head>
   <body>
-    <div style="display: none">
+    <div style="display: none;">
     <div id="form">
-      <table>
-        <tr><td>Information:</td> <td><input type='text' id='info'/> </td> </tr>
-        <tr><td></td><td><input type='button' value='Save' onclick='saveData()'/></td></tr>
-      </table>
+        <label>Information:</label>
+        <br>
+        <input style="width:96px;" type='text' id='info'/>
+        <br><br>
+        <input type='button' value='Save' onclick='saveData()'/>
     </div>
+
     <div id="message">Location saved</div>
   </div>
 

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Images database</title>
+    <style>
+      #map {
+        width: 100%;
+        height: 400px;
+      }
+    </style>
+    <script>
+    window.addEventListener("load", docLoaded);
+
+    var map;
+    var marker;
+    var infowindow;
+    var messagewindow;
+
+    function initMap() {
+      var oulu = {lat: 65.0121, lng: 25.4651};
+      map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: oulu
+      });
+
+      infowindow = new google.maps.InfoWindow({
+          content: document.getElementById('form')
+      });
+
+      messagewindow = new google.maps.InfoWindow({
+          content: document.getElementById('message')
+      });
+
+      google.maps.event.addListener(map, 'click', function(event) {
+          marker = new google.maps.Marker({
+              position: event.latLng,
+              map: map
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+              infowindow.open(map, marker);
+              });
+          });
+    }
+      function docLoaded() {
+        var latInput = document.getElementById("lat");
+        var lngInput = document.getElementById("lng");
+        var addressInput = document.getElementById("address");
+            addressInput.oninput = function () {
+              if (this.value != "" || this.value.length > 0) {
+                latInput.disabled = true;
+                lngInput.disabled = true;
+              } else {
+                latInput.disabled = false;
+                lngInput.disabled = false;
+              }
+            }
+            latInput.oninput = function () {
+              if (this.value != "" || this.value.length > 0 ||
+                  lngInput.value != "" || lngInput.value.length) {
+                addressInput.disabled = true;
+              } else {
+                addressInput.disabled = false;
+              }
+            }
+            lngInput.oninput = function () {
+              if (this.value != "" || this.value.length > 0 ||
+                  latInput.value != "" || latInput.value.length) {
+                addressInput.disabled = true;
+              } else {
+                addressInput.disabled = false;
+              }
+            }
+      }
+
+      function saveData() {
+        console.log("WOW");
+
+        var fullPath = document.getElementById('fileSelect').value;
+        if (fullPath) {
+          var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+          var filename = fullPath.substring(startIndex);
+          if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+            filename = filename.substring(1);
+          }
+          fullPath = escape(filename);
+        }
+        var info = escape(document.getElementById('info').value);
+        var latlng = marker.getPosition();
+        var url = 'http://www.students.oamk.fi/~t6bada00/Phase4/phpsqlinfo_addrow.php?info=' + info +
+                  '&lat=' + latlng.lat() + '&lng=' + latlng.lng() + '&img=' + fullPath;
+
+        downloadUrl(url, function(data, responseCode) {
+
+          if (responseCode != 404 || responseCode !=500 ) {
+            infowindow.close();
+            messagewindow.open(map, marker);
+          } else {
+            console.log("DAANG")
+          }
+        });
+      }
+
+      function downloadUrl(url, callback) {
+        var request = new XMLHttpRequest();
+        if ("withCredentials" in request) {
+          request.open('GET', url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+          request = new XDomainRequest();
+          request.open('GET', url);
+        }
+
+        request.onreadystatechange = function() {
+          if (request.readyState == 4) {
+            request.onreadystatechange = doNothing;
+            callback(request.responseText, request.status);
+          }
+        };
+        request.send(null);
+        }
+
+      function doNothing () {
+      }
+
+      var map, marker, coords;
+
+    </script>
+  </head>
+  <body>
+    <div style="display:none;">
+      <div id="form">
+        <form method="POST" action="/maps/images" enctype="multipart/form-data">
+        <label>Place name:</label>
+        <input id="address" type="text" name="address" placeholder="Enter the address...">
+        <br><br>
+        <label>Or enter coordinates:</label>
+        <input id="lat" type="text" name="lat" placeholder="Latitude...">
+        <input id="lng" type="text" name="lng" placeholder="Longitude...">
+        <br><br>
+        <label>Information:</label>
+        <br>
+        <input style="width:96px;" type='text' id='info'/>
+        <label for="fileSelect">Filename:</label>
+          <input type="file" name="photo" id="fileSelect">
+        <br><br>
+        <input type="submit" name="submit" value="Upload" onclick="saveData()">
+        <p><strong>Note:</strong> Only .jpg, .jpeg, .gif, .png formats allowed to a max size of 5 MB.</p>
+      </div>
+    </div>
+
+    <h1>Enter the place name to get geocoding results</h1>
+    {% if message is defined %}
+      <h2>{{message}}</h2>
+    {% endif %}
+    <div id="map"></div>
+
+  </body>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0vApjUjq1RfkFxr3_p85VdGU3b6u7QM&callback=initMap">
+  </script>
+</html>
