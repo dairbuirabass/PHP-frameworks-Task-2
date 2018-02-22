@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Doctrine\DBAL\Driver\Connection;
 
 class MainController extends Controller
 {
@@ -174,5 +175,55 @@ class MainController extends Controller
        else {
          return $this->render('maps/navigation.html.twig');
        }
+     }
+
+     /**
+      * @Route("/maps/locations")
+      */
+     public function locations()
+     {
+       if (isset($_GET['submitForm'])) {
+         return $this->render('maps/locations.html.twig', array(
+               'origin' => $originFormatted, 'destination' => $destinationFormatted, 'mode' => $mode, 'distance' => $distance
+         ));
+       }
+       else {
+         return $this->render('maps/locations.html.twig');
+       }
+     }
+
+     /**
+      * @Route("/addrow")
+      */
+     public function addrow(Connection $conn)
+     {
+       try
+       {
+        $dsn = "mysql:host=localhost;dbname=google";
+        $db = new PDO ($dsn, "root", "root");
+        //print ("Connected\n");
+       }
+       catch (PDOException $e)
+       {
+        print ("Cannot connect to server\n");
+        print ("Error code: " . $e->getCode() . "\n");
+        print ("Error message: " . $e->getMessage() . "\n");
+       }
+
+       $stmt=$db->prepare("INSERT INTO markers (name, address, lat, lng, type) VALUES (:name, :address, :lat, :lng, :type)");
+       		$stmt->bindParam(':name', $name);
+       		$stmt->bindParam(':address', $address);
+           $stmt->bindParam(':lat', $lat);
+           $stmt->bindParam(':lng', $lng);
+           $stmt->bindParam(':type', $type);
+
+           // Gets data from URL parameters.
+           $name = $_GET['name'];
+           $address = $_GET['address'];
+           $lat = $_GET['lat'];
+           $lng = $_GET['lng'];
+           $type = $_GET['type'];
+
+       	  $stmt->execute();
      }
 }
